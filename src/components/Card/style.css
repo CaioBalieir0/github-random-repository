@@ -1,0 +1,19 @@
+.alert {
+  padding: 100px auto !important;
+}
+.logo-span {
+  background: #000000;
+  padding: 20px;
+  height: 10px;
+  border-radius: 6px;
+}
+
+.rep {
+  border: black 3px solid;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.form-select {
+  border: black 2px solid !important;
+}
