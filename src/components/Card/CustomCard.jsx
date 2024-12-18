@@ -1,54 +1,13 @@
 import { Card, Form, Spinner, Button, Alert, Stack } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GoRepoForked, GoStarFill } from "react-icons/go";
+import useFetch from "./hooks/useFetch";
 import "./style.css";
 
 export default function CustomCard() {
-  const [languages, setLanguages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(null);
+  const { languages, loading, erro, repository, fetchRepositories } =
+    useFetch();
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [repository, setRepository] = useState([]);
-
-  const fetchSelectLanguage = async () => {
-    try {
-      const response = await fetch(
-        "https://raw.githubusercontent.com/kamranahmedse/githunt/master/src/components/filters/language-filter/languages.json"
-      );
-      const data = await response.json();
-      setLanguages(data);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchRepositories = async (language) => {
-    try {
-      if (!language) {
-        throw new Error("Nenhuma linguagem selecionada.");
-      }
-      setErro(null);
-      setLoading(true);
-
-      const response = await fetch(
-        `https://api.github.com/search/repositories?q=language:${language}&sort=stars&order=desc`
-      );
-
-      const data = await response.json();
-      const randomRep = Math.floor(Math.random() * data.items.length);
-      setRepository(data.items[randomRep]);
-    } catch (err) {
-      setErro(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSelectLanguage();
-  }, []);
 
   const handleChange = (event) => setSelectedLanguage(event.target.value);
 
@@ -77,17 +36,16 @@ export default function CustomCard() {
               })}
             </Form.Select>
           )}
+
           <div>
-            {loading ? (
+            {selectedLanguage === null ? (
+              <Alert variant="secondary">Please select a language</Alert>
+            ) : loading ? (
               <Alert variant="secondary">
                 Loading, please wait <Spinner />
               </Alert>
             ) : erro ? (
-              !selectedLanguage ? (
-                <Alert variant="secondary">Please select a language</Alert>
-              ) : (
-                <Alert variant="danger">{erro}</Alert>
-              )
+              <Alert variant="danger">{erro}</Alert>
             ) : (
               <div className="rep p-4">
                 <h2>
@@ -109,6 +67,7 @@ export default function CustomCard() {
               </div>
             )}
           </div>
+
           {selectedLanguage && !erro && (
             <Button
               variant="info"
